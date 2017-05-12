@@ -1,0 +1,25 @@
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+ <script src="server.js"></script>
+</head>
+<body>
+  <script>
+  $.get('server.js', {
+    url:'/graphql',
+    dataType: 'json',
+    data: 'query={query{posts{title}}}',
+    success: function(response) {
+      alert(response);
+    },
+    error: function(xhr) {
+      //Do Something to handle error
+      alert("FAIL");
+      console.error(xhr);
+    }
+  });
+  </script>
+
+  <h1> HELLO!</h1>
+</body>
+</html>
