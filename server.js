@@ -1,7 +1,7 @@
-let Express = require('express');
-let graphql =require('graphql').graphql;
-let  GraphHTTP =require('express-graphql');
- Schema =('./schema');
+import Express from'express';
+import {graphql} from 'graphql';
+import GraphHTTP from 'express-graphql';
+import Schema  from './schema';
 
 var queryy = ' query{people {id }}';
 const APP_PORT = 3000;

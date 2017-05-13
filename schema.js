@@ -32,6 +32,18 @@ const Department = new GraphQLObjectType({
         resolve(department){
           return department.phonenumber;
         }
+      },
+      director:{
+        type:Director,
+        resolve(department){
+          return department.getDirector();
+        }
+      },
+      orderers:{
+        type: new GraphQLList(Orderer),
+        resolve(department){
+          return department.getOrderers();
+        }
       }
     };
   }
@@ -77,12 +89,30 @@ const Orderer = new GraphQLObjectType({
         resolve(orderer){
           return orderer.address;
         }
+      },
+      department:{
+        type:Department,
+        resolve(orderer){
+          return orderer.getDepartment();
+        }
+      },
+      user:{
+        type:Users,
+        resolve(orderer){
+          return orderer.getUser();
+        }
+      },
+      orders:{
+        type: new GraphQLList(_Orders),
+        resolve(orderer){
+          return orderer.getOrders();
+        }
       }
     };
   }
 });
-const Orders = new GraphQLObjectType({
-  name: ' Orders',
+const _Orders = new GraphQLObjectType({
+  name: 'Orders',
   description: 'Orders from Orderer',
   fields(){
     return{
@@ -108,6 +138,18 @@ const Orders = new GraphQLObjectType({
         type:GraphQLInt, //???
         resolve(orders){
           return orders.salary;
+        }
+      },
+      orderer:{
+        type:Orderer,
+        resolve(orders){
+          return orders.getOrderer();
+        }
+      },
+      objects:{
+        type: new GraphQLList(Objects),
+        resolve(orders){
+          return orders.getObjects();
         }
       }
     };
@@ -141,6 +183,18 @@ const Director = new GraphQLObjectType({
         type:GraphQLInt, //???
         resolve(director){
           return director.work_experience;
+        }
+      },
+      department:{
+        type:Department,
+        resolve(director){
+          return director.getDepartment();
+        }
+      },
+      user:{
+        type:Users,
+        resolve(director){
+          return director.getUser();
         }
       }
     };
@@ -181,6 +235,18 @@ const Architectors = new GraphQLObjectType({
         resolve(architectors){
           return architectors.phone_number;
         }
+      },
+      user:{
+        type:Users,
+        resolve(architectors){
+          return architectors.getUser();
+        }
+      },
+      objects:{
+        type: new GraphQLList(Objects),
+        resolve(architectors){
+          return architectors.getObjects();
+        }
       }
     };
   }
@@ -198,13 +264,13 @@ const Users = new GraphQLObjectType({
         }
       },
       password:{
-        type:GraphQlString,
+        type:GraphQLString,
         resolve(users){
           return users.password;
         }
       },
       role:{
-        type:GraphQLInt,
+        type:GraphQLString,
         resolve(users){
           return users.role;
         }
@@ -213,6 +279,24 @@ const Users = new GraphQLObjectType({
         type:GraphQLBoolean,
         resolve(users){
           return users.enabled;
+        }
+      },
+      architector:{
+        type:Architectors,
+        return(users){
+          return users.getArchitector();
+        }
+      },
+      director:{
+        type:Director,
+        return(users){
+          return users.getDirector();
+        }
+      },
+      orderer:{
+        type:Orderer,
+        return(users){
+          return users.getOrderer();
         }
       }
     };
@@ -246,6 +330,18 @@ const Objects = new GraphQLObjectType({
         resolve(objects){
           return objects.hours;
         }
+      },
+      architector:{
+        type:Architectors,
+        resolve(objects){
+          return objects.getArchitector();
+        }
+      },
+      orders:{
+        type: new GraphQLList(_Orders),
+        resolve(objects){
+          return objects.getOrders();
+        }
       }
     };
   }
@@ -276,33 +372,33 @@ const Orders_has_Objects = new GraphQLObjectType({
     };
   }
 });
-const Post = new GraphQLObjectType({
-  name: 'Post',
-  description: 'Blog post',
-  fields () {
-    return {
-      title: {
-        type: GraphQLString,
-        resolve (post) {
-          return post.title;
-        }
-      },
-      content: {
-        type: GraphQLString,
-        resolve (post) {
-          return post.content;
-        }
-      },
-      person: {
-        type: Person,
-        resolve (post) {
-          return post.getPerson();
-        }
-      }
-    };
-  }
-});
-// 
+// const Post = new GraphQLObjectType({
+//   name: 'Post',
+//   description: 'Blog post',
+//   fields () {
+//     return {
+//       title: {
+//         type: GraphQLString,
+//         resolve (post) {
+//           return post.title;
+//         }
+//       },
+//       content: {
+//         type: GraphQLString,
+//         resolve (post) {
+//           return post.content;
+//         }
+//       },
+//       person: {
+//         type: Person,
+//         resolve (post) {
+//           return post.getPerson();
+//         }
+//       }
+//     };
+//   }
+// });
+//
 // const Person = new GraphQLObjectType({
 //   name: 'Person',
 //   description: 'This represents a Person',
@@ -337,73 +433,70 @@ const Post = new GraphQLObjectType({
 //         resolve (person) {
 //           return person.getPosts();
 //         }
-//       }
-//     };
-//   }
-// });
-
+// //       }
+// //     };
+// //   }
+// // });
+//
 const Query = new GraphQLObjectType({
   name: 'Query',
   description: 'Root query object',
   fields: () => {
     return {
-      people: {
-        type: new GraphQLList(Person),
+      department: {
+        type: new GraphQLList(Department),
         args: {
           id: {
             type: GraphQLInt
-          },
-          email: {
-            type: GraphQLString
           }
         },
         resolve (root, args) {
-          return Db.models.person.findAll({ where: args });
+          return Db.models.department.findAll({ where: args });
         }
       },
-      posts: {
-        type: new GraphQLList(Post),
+      users: {
+        type: new GraphQLList(Users),
         resolve (root, args) {
-          return Db.models.post.findAll({ where: args });
+          return Db.models.users.findAll({ where: args });
         }
       }
     };
   }
 });
 
-const Mutation = new GraphQLObjectType({
-  name: 'Mutations',
-  description: 'Functions to set stuff',
-  fields () {
-    return {
-      addPerson: {
-        type: Person,
-        args: {
-          firstName: {
-            type: new GraphQLNonNull(GraphQLString)
-          },
-          lastName: {
-            type: new GraphQLNonNull(GraphQLString)
-          },
-          email: {
-            type: new GraphQLNonNull(GraphQLString)
-          }
-        },
-        resolve (source, args) {
-          return Db.models.person.create({
-            firstName: args.firstName,
-            lastName: args.lastName,
-            email: args.email.toLowerCase()
-          });
-        }
-      }
-    };
-  }
-});
+// const Mutation = new GraphQLObjectType({
+//   name: 'Mutations',
+//   description: 'Functions to set stuff',
+//   fields () {
+//     return {
+//       addPerson: {
+//         type: Person,
+//         args: {
+//           firstName: {
+//             type: new GraphQLNonNull(GraphQLString)
+//           },
+//           lastName: {
+//             type: new GraphQLNonNull(GraphQLString)
+//           },
+//           email: {
+//             type: new GraphQLNonNull(GraphQLString)
+//           }
+//         },
+//         resolve (source, args) {
+//           return Db.models.person.create({
+//             firstName: args.firstName,
+//             lastName: args.lastName,
+//             email: args.email.toLowerCase()
+//           });
+//         }
+//       }
+//     };
+//   }
+// });
 
 const Schema = new GraphQLSchema({
-  query: Query,
-  mutation: Mutation
+  query: Query
+  // mutation: Mutation
 });
 
 export default Schema;
