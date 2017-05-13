@@ -531,39 +531,93 @@ const Query = new GraphQLObjectType({
   }
 });
 
-// const Mutation = new GraphQLObjectType({
-//   name: 'Mutations',
-//   description: 'Functions to set stuff',
-//   fields () {
-//     return {
-//       addPerson: {
-//         type: Person,
-//         args: {
-//           firstName: {
-//             type: new GraphQLNonNull(GraphQLString)
-//           },
-//           lastName: {
-//             type: new GraphQLNonNull(GraphQLString)
-//           },
-//           email: {
-//             type: new GraphQLNonNull(GraphQLString)
-//           }
-//         },
-//         resolve (source, args) {
-//           return Db.models.person.create({
-//             firstName: args.firstName,
-//             lastName: args.lastName,
-//             email: args.email.toLowerCase()
-//           });
-//         }
-//       }
-//     };
-//   }
-// });
+const Mutation = new GraphQLObjectType({
+  name: 'Mutations',
+  description: 'Functions to set stuff',
+  fields () {
+    return {
+      addUser: {
+        type: Users,
+        args: {
+          login: {
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          password: {
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          role: {
+            type: new GraphQLNonNull(GraphQLInt)
+          }
+        },
+        resolve (source, args) {
+          return Db.models.users.create({
+            login: args.login,
+            password: args.password,
+            role: args.role
+          });
+        }
+      },
+      addArchitector:{
+        type:Architectors,
+        args:{
+          pib:{
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          hours:{
+            type:new GraphQLNonNull(GraphQLInt)
+          },
+          work_experience:{
+            type: GraphQLInt
+          },
+          email:{
+            type:GraphQLString
+          },
+          phonenumber:{
+            type:GraphQLString
+          }
+        },
+        resolve(source,args){
+          return Db.models.architectors.create({
+            pib:args.pib,
+            hours: args.hours,
+            work_experience:args.work_experience,
+            email: args.email,
+            phonenumber: args.phonenumber
+          });
+        }
+      },
+      addDirector:{
+        type:Director,
+        args:{
+          pib:{
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          address:{
+            type:GraphQLString
+          },
+          marital_status:{
+            type:GraphQLString
+          },
+          work_experience:{
+            type:GraphQLInt
+          }
+        },
+        resolve(source,args){
+          return Db.models.director.create({
+            pib:args.pib,
+            address:args.address,
+            marital_status:args.marital_status,
+            work_experience:args.work_experience
+          });
+        }
+      }
+    };
+  }
+});
 
 const Schema = new GraphQLSchema({
-  query: Query
-  // mutation: Mutation
+  query: Query,
+  mutation: Mutation
 });
 
 export default Schema;
