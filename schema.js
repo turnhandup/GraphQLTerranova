@@ -368,6 +368,18 @@ const Orders_has_Objects = new GraphQLObjectType({
         resolve(orders_has_objects){
           return orders_has_objects.determination;
         }
+      },
+      orders:{
+        type:new GraphQLList(_Orders),
+        resolve(orders_has_objects){
+          return orders_has_objects.getOrders();
+        }
+      },
+      objects:{
+        type: new GraphQLList(Objects),
+        resolve(orders_has_objects){
+          return orders_has_objects.getObjects();
+        }
       }
     };
   }
@@ -458,6 +470,61 @@ const Query = new GraphQLObjectType({
         type: new GraphQLList(Users),
         resolve (root, args) {
           return Db.models.users.findAll({ where: args });
+        }
+      },
+      director: {
+        type: new GraphQLList(Director),
+        args:{
+          id:{
+            type: GraphQLInt
+          }
+        },
+        resolve(root,args){
+          return Db.models.director.findAll({where: args});
+        }
+      },
+      architector: {
+        type: new GraphQLList(Architectors),
+        args: {
+          id:{
+            type:GraphQLInt
+          }
+        },
+        resolve(root,args){
+          return Db.models.director.findAll({where: args});
+        }
+      },
+      orderer: {
+        type: new GraphQLList(Orderer),
+        args: {
+          id:{
+            type:GraphQLInt
+          }
+        },
+        resolve(root, args){
+          return Db.models.orderer.findAll({where: args});
+        }
+      },
+      order:{
+        type: new GraphQLList(_Orders),
+        args: {
+          id:{
+            type:GraphQLInt
+          }
+        },
+        resolve(root, args){
+          return Db.models.order.findAll({where: args});
+        }
+      },
+      object:{
+        type: new GraphQLList(Objects),
+        args: {
+          id:{
+            type:GraphQLInt
+          }
+        },
+        resolve(root, args){
+          return Db.models.object.findAll({where: args})
         }
       }
     };
