@@ -6,7 +6,7 @@ import {
   GraphQLList,
   GraphQLNonNull,
   GraphQLFloat,
-  GraphQLBoolean
+  GraphQLBoolean,
 } from 'graphql';
 
 import Db from './db';
@@ -609,6 +609,104 @@ const Mutation = new GraphQLObjectType({
             marital_status:args.marital_status,
             work_experience:args.work_experience
           });
+        }
+      },
+      addOrderer:{
+        type:Orderer,
+        args:{
+          pib:{
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          company_name:{
+            type: new GraphQLNonNull(GraphQLString)
+          },
+          phone_number:{
+            type:GraphQLString
+          },
+          passport_data:{
+            type:GraphQLString
+          },
+          email:{
+            type:GraphQLString
+          },
+          address:{
+            type:GraphQLString
+          }
+        },
+        resolve(source,args){
+          return Db.models.orderer.create({
+            pib:args.pib,
+            company_name:args.company_name,
+            phone_number:args.phone_number,
+            passport_data:args.passport_data,
+            email:args.email,
+            address:args.address
+          });
+        }
+      },
+      addOrder:{
+        type:_Orders,
+        args:{
+          hours:{
+            type:new GraphQLNonNull(GraphQLInt)
+          },
+          objects:{
+            type:new GraphQLNonNull(GraphQLInt)
+          },
+          workers:{
+            type:GraphQLInt
+          },
+          salary:{
+            type:GraphQLInt
+          }
+        },
+        resolve(source,args){
+          return Db.models.order.create({
+            hours:args.hours,
+            objects_number:args.objects,
+            workers:args.workers,
+            salary:args.salary
+          });
+        }
+      },
+      addObject:{
+        type:Objects,
+        args:{
+          status:{
+            type: new GraphQLNonNull(GraphQLBoolean)
+          },
+          hours:{
+            type:GraphQLInt
+          },
+          detalisation:{
+            type:new GraphQLNonNull(GraphQLInt)
+          },
+          software:{
+            type:GraphQLString
+          }
+
+        },
+        resolve(source,args){
+          return Db.models.object.create({
+            status:args.status,
+            hours:args.hours,
+            detalisation:args.detalisation,
+            software:args.software
+          });
+        }
+      },
+      updateUser:{
+        type:Users,
+        args:{
+          value:{
+            type:UpdateUserInputType
+          },
+          where:{
+            type:WhereUpdateUserInputType
+          }
+        },
+        resolve(_,args){
+          return Db.models.users.update(args.value,{where: args.where});
         }
       }
     };
